@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
 	IAccountInformationProcess,
 	IAccountInformation,
@@ -12,6 +13,7 @@ import {
 	ETerminationStatus,
 	EAccountStatus
 } from "../models";
+import { canadianEligbility, usEligibility } from "./EligibilityMethods";
 
 export class accountInformationProcess implements IAccountInformationProcess {
 	private elgibilityStatus: iEligibilityStatus = {
@@ -43,166 +45,68 @@ export class accountInformationProcess implements IAccountInformationProcess {
 	};
 
 	constructor(accountInformation: IAccountInformation) {
-		Object.keys(accountInformation).map(
-			key => (this.accountInformation[key] = accountInformation[key])
-		);
+		Object.keys(accountInformation).map(key => (this.accountInformation[key] = accountInformation[key]));
 
-		this.checkEligibleForPayoffQuote = this.checkEligibleForPayoffQuote.bind(
-			this
-		);
-		this.getCandianEligibility = this.getCandianEligibility.bind(this);
-		this.getUsEligibility = this.getUsEligibility.bind(this);
-		this.checkOnlinePayoffEligibility = this.checkOnlinePayoffEligibility.bind(
-			this
-		);
+		this.checkEligibleForPayoffQuote = this.checkEligibleForPayoffQuote.bind(this);
+		this.CandianEligibility = this.CandianEligibility.bind(this);
+		this.UsEligibility = this.UsEligibility.bind(this);
+		this.checkOnlinePayoffEligibility = this.checkOnlinePayoffEligibility.bind(this);
 
-		let {
-			isOpen,
-			editable,
-			processStatus,
-			terminationType,
-			disabled,
-			reposessionStatus,
-			daysDelinquent,
-			bankruptcyStatus,
-			terminationStatus,
-			dueAumount,
-			lastEdited,
-			accountStatus
-		} = this.accountInformation;
-
-		if (isOpen) {
-			editable =
-				(processStatus === EprocessStatus.completed ||
-					processStatus === EprocessStatus.pending) &&
-				terminationType === EterminationType.terminationByPayoff;
-			disabled =
-				isOpen &&
-				(reposessionStatus === EreposessionStatus.reposessed ||
-					(processStatus === EprocessStatus.completed ||
-						processStatus === EprocessStatus.pending) ||
-					daysDelinquent > 69 ||
-					bankruptcyStatus === EBankruptcyStatus.bankrupt);
-			editable =
-				terminationStatus === ETerminationStatus.T &&
-				dueAumount === 0 &&
-				lastEdited.getDate() > new Date().getDate() + 45;
+		if (this.accountInformation.isOpen) {
+			this.accountInformation.editable =
+				(this.accountInformation.processStatus === EprocessStatus.completed ||
+					this.accountInformation.processStatus === EprocessStatus.pending) &&
+				this.accountInformation.terminationType === EterminationType.terminationByPayoff;
+			this.accountInformation.disabled =
+				this.accountInformation.isOpen &&
+				(this.accountInformation.reposessionStatus === EreposessionStatus.reposessed ||
+					(this.accountInformation.processStatus === EprocessStatus.completed ||
+						this.accountInformation.processStatus === EprocessStatus.pending) ||
+					this.accountInformation.daysDelinquent > 69 ||
+					this.accountInformation.bankruptcyStatus === EBankruptcyStatus.bankrupt);
+			this.accountInformation.editable =
+				this.accountInformation.terminationStatus === ETerminationStatus.T &&
+				this.accountInformation.dueAumount === 0 &&
+				moment(this.accountInformation.lastEdited).add(45, "days") <= moment();
 		}
-		if (!isOpen) {
+		if (!this.accountInformation.isOpen) {
 			let date = new Date().getDate();
-			editable =
-				(accountStatus === EAccountStatus.paidoff ||
-					accountStatus === EAccountStatus.closed) &&
-				lastEdited.getDay() > date + 45;
+			this.accountInformation.editable =
+				(this.accountInformation.accountStatus === EAccountStatus.paidoff ||
+					this.accountInformation.accountStatus === EAccountStatus.closed) &&
+				moment(this.accountInformation.lastEdited).add(45, "days") <= moment();
 		}
 	}
 
 	checkEligibleForPayoffQuote(): boolean {
 		let payOffQuoteEligblityStatus = false;
 
-		if (
-			this.accountInformation.isOpen &&
-			this.accountInformation.editable
-		) {
+		if (this.accountInformation.isOpen && this.accountInformation.editable) {
 			if (this.accountInformation.countryType === ECountryType.USA)
-				payOffQuoteEligblityStatus = this.getUsEligibility();
+				payOffQuoteEligblityStatus = this.UsEligibility();
 
 			if (this.accountInformation.countryType === ECountryType.Canada)
-				payOffQuoteEligblityStatus = this.getCandianEligibility();
+				payOffQuoteEligblityStatus = this.CanadianEligibility();
 		}
 
 		return payOffQuoteEligblityStatus;
 	}
 
-	getUsEligibility(): boolean {
-		let {
-			accountType,
-			leaseExtended,
-			state,
-			maturityDate,
-			isGrounded,
-			terminationStatus,
-			dueAumount,
-			disabled,
-			isOpen,
-			processStatus
-		} = this.accountInformation;
+	UsEligibility(): boolean {
+		
 		let { eligibleForPayoffQuote } = this.elgibilityStatus;
 
-		if ([EStateType.CO, EStateType.FL, EStateType.SD].includes(state) && accountType === EAccountType.lease) {
-			eligibleForPayoffQuote = false;
-		}
-		if (leaseExtended) {
-			eligibleForPayoffQuote = false;
-		}
-		if (accountType === EAccountType.lease || accountType === EAccountType.cop) {
-			if (maturityDate.getDate() + 1 === new Date().getDate()) {
-				// FIX: Change to moment
-				eligibleForPayoffQuote = false;
-			}
-
-			if (isGrounded && terminationStatus === ETerminationStatus.S) {
-				eligibleForPayoffQuote = false;
-			}
-
-			if (terminationStatus === ETerminationStatus.T) {
-				eligibleForPayoffQuote = false;
-			}
-
-			if (accountType === EAccountType.retail && dueAumount <= 5) {
-				eligibleForPayoffQuote = false;
-			}
-
-			if (!isOpen && !disabled) {
-				eligibleForPayoffQuote = false;
-			}
-
-			if (processStatus === EprocessStatus.pending || processStatus === EprocessStatus.completed) {
-				eligibleForPayoffQuote = false;
-			}
-		}
-
-		return eligibleForPayoffQuote;
+		return usEligibility(eligibleForPayoffQuote, this.accountInformation);
 	}
 
-	getCandianEligibility(): boolean {
-		let {
-			accountType,
-			maturityDate,
-			dueAumount,
-			isOpen,
-			disabled
-		} = this.accountInformation;
+	CandianEligibility(): boolean {
 		let { eligibleForPayoffQuote } = this.elgibilityStatus;
 
-		if (accountType === EAccountType.lease) {
-			eligibleForPayoffQuote = false;
-		}
-
-		if (
-			accountType === EAccountType.balloon &&
-			maturityDate.getDate() + 1 === new Date().getDate()
-		) {
-			eligibleForPayoffQuote = false;
-		}
-
-		if (accountType === EAccountType.retail && dueAumount <= 5) {
-			eligibleForPayoffQuote = false;
-		}
-
-		if (!isOpen && !disabled) {
-			eligibleForPayoffQuote = false;
-		}
-
-		return eligibleForPayoffQuote;
+		return canadianEligbility(eligibleForPayoffQuote, this.accountInformation);
 	}
 
 	checkOnlinePayoffEligibility(): boolean {
-		let {
-			accountType,
-			countryType,
-			payOffAmount
-		} = this.accountInformation;
+		let { accountType, countryType, payOffAmount } = this.accountInformation;
 		let { eligibleonlinePayoff } = this.elgibilityStatus;
 
 		if (accountType === EAccountType.lease || countryType === ECountryType.USA) {
@@ -222,18 +126,16 @@ export class accountInformationProcess implements IAccountInformationProcess {
 	}
 
 	checkpayOffByMailEligibility(): boolean {
-		let {
-			accountType,
-			payOffAmount,
-			countryType
-		} = this.accountInformation;
 		let { eligbilepayOffByMail } = this.elgibilityStatus;
 
-		if (accountType === EAccountType.retail || accountType === EAccountType.balloon) {
+		if (
+			this.accountInformation.accountType === EAccountType.retail ||
+			this.accountInformation.accountType === EAccountType.balloon
+		) {
 			eligbilepayOffByMail = true;
 		}
 
-		if (countryType === ECountryType.USA && payOffAmount > 25000) {
+		if (this.accountInformation.countryType === ECountryType.USA && this.accountInformation.payOffAmount > 25000) {
 			eligbilepayOffByMail = true;
 		}
 
