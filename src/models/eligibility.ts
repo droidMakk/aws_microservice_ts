@@ -48,7 +48,7 @@ export interface  IAccountInformation {
     terminationType: EterminationType, 
     reposessionStatus: EreposessionStatus,
     daysDelinquent: number,
-    bankruptcyStatus: EBankrupt,
+    bankruptcyStatus: EBankruptcyStatus,
     leaseExtended: boolean,
     isGrounded: boolean,
     countryType: ECountryType, 
