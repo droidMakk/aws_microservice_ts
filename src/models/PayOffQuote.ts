@@ -1,0 +1,3 @@
+enum payMentMethod {
+    byMail, byOnline
+}
