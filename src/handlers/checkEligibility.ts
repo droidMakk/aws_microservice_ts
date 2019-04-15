@@ -16,33 +16,9 @@ import {
 import { canadianEligbility, usEligibility, checkEligibleForPayoffQuote, checkOnlinePayoffEligibility, checkpayOffByMailEligibility } from "./EligibilityMethods";
 
 export class accountInformationProcess implements IAccountInformationProcess {
-	private elgibilityStatus: iEligibilityStatus = {
-		eligibleForPayoffQuote: false,
-		eligibleonlinePayoff: false,
-		eligbilepayOffByMail: false
-	};
+	private elgibilityStatus: iEligibilityStatus;
 
-	private accountInformation: IAccountInformation = {
-		isOpen: true,
-		processStatus: EprocessStatus.none,
-		terminationType: EterminationType.terminationByPayoff,
-		reposessionStatus: EreposessionStatus.reposessed,
-		daysDelinquent: 69,
-		bankruptcyStatus: EBankruptcyStatus.bankrupt,
-		leaseExtended: false,
-		isGrounded: false,
-		countryType: ECountryType.USA,
-		state: EStateType.CO,
-		maturityDate: new Date(),
-		accountType: EAccountType.lease,
-		terminationStatus: ETerminationStatus.E,
-		editable: false,
-		payOffAmount: 0,
-		dueAumount: 0,
-		disabled: true,
-		accountStatus: EAccountStatus.active,
-		lastEdited: new Date()
-	};
+	private accountInformation: IAccountInformation;
 
 	constructor(accountInformation: IAccountInformation) {
 		Object.keys(accountInformation).map(key => (this.accountInformation[key] = accountInformation[key]));
@@ -99,6 +75,9 @@ export class accountInformationProcess implements IAccountInformationProcess {
 	}
 
 	public get EligiblityStatus(): any {
+		this.checkEligibleForPayoffQuote();
+		this.checkOnlinePayoffEligibility();
+		this.checkpayOffByMailEligibility()
 		return this.elgibilityStatus;
 	}
 
