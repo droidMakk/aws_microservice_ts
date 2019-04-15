@@ -48,8 +48,6 @@ export class accountInformationProcess implements IAccountInformationProcess {
 		Object.keys(accountInformation).map(key => (this.accountInformation[key] = accountInformation[key]));
 
 		this.checkEligibleForPayoffQuote = this.checkEligibleForPayoffQuote.bind(this);
-		this.CandianEligibility = this.CandianEligibility.bind(this);
-		this.UsEligibility = this.UsEligibility.bind(this);
 		this.checkOnlinePayoffEligibility = this.checkOnlinePayoffEligibility.bind(this);
 
 		if (this.accountInformation.isOpen) {
@@ -79,85 +77,25 @@ export class accountInformationProcess implements IAccountInformationProcess {
 	}
 
 	checkEligibleForPayoffQuote(): boolean {
-<<<<<<< HEAD
 		let { eligibleForPayoffQuote } = this.elgibilityStatus;
 
-		return checkEligibleForPayoffQuote(eligibleForPayoffQuote, this.accountInformation);
-=======
-		let payOffQuoteEligblityStatus = false;
-
-		if (this.accountInformation.isOpen && this.accountInformation.editable) {
-			if (this.accountInformation.countryType === ECountryType.USA)
-				payOffQuoteEligblityStatus = this.UsEligibility();
-
-			if (this.accountInformation.countryType === ECountryType.Canada)
-				payOffQuoteEligblityStatus = this.CanadianEligibility();
-		}
-
-		return payOffQuoteEligblityStatus;
->>>>>>> d649692056934befda4f0ba1abb34c5beceb60fa
-	}
-
-	UsEligibility(): boolean {
+		eligibleForPayoffQuote = checkEligibleForPayoffQuote(eligibleForPayoffQuote, this.accountInformation);
 		
-		let { eligibleForPayoffQuote } = this.elgibilityStatus;
-
-		return usEligibility(eligibleForPayoffQuote, this.accountInformation);
-	}
-
-	CandianEligibility(): boolean {
-		let { eligibleForPayoffQuote } = this.elgibilityStatus;
-
-		return canadianEligbility(eligibleForPayoffQuote, this.accountInformation);
+        return eligibleForPayoffQuote;
 	}
 
 	checkOnlinePayoffEligibility(): boolean {
-<<<<<<< HEAD
 	
 		let { eligibleonlinePayoff } = this.elgibilityStatus;
 
 
 		return checkOnlinePayoffEligibility(eligibleonlinePayoff, this.accountInformation);
-=======
-		let { accountType, countryType, payOffAmount } = this.accountInformation;
-		let { eligibleonlinePayoff } = this.elgibilityStatus;
-
-		if (accountType === EAccountType.lease || countryType === ECountryType.USA) {
-			eligibleonlinePayoff = false;
-		}
-		if (
-			accountType === EAccountType.retail ||
-			accountType === EAccountType.balloon ||
-			accountType === EAccountType.cop
-		) {
-			if (payOffAmount > 5 && payOffAmount <= 25000) {
-				eligibleonlinePayoff = true;
-			}
-		}
-
-		return eligibleonlinePayoff;
->>>>>>> d649692056934befda4f0ba1abb34c5beceb60fa
 	}
 
 	checkpayOffByMailEligibility(): boolean {
 		let { eligbilepayOffByMail } = this.elgibilityStatus;
 
-<<<<<<< HEAD
 		return checkpayOffByMailEligibility(eligbilepayOffByMail, this.accountInformation);
-=======
-		if (
-			this.accountInformation.accountType === EAccountType.retail ||
-			this.accountInformation.accountType === EAccountType.balloon
-		) {
-			eligbilepayOffByMail = true;
-		}
-
-		if (this.accountInformation.countryType === ECountryType.USA && this.accountInformation.payOffAmount > 25000) {
-			eligbilepayOffByMail = true;
-		}
-
-		return eligbilepayOffByMail;
->>>>>>> d649692056934befda4f0ba1abb34c5beceb60fa
 	}
 
 	public get EligiblityStatus(): any {
