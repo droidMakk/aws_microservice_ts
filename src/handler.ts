@@ -1,8 +1,8 @@
 import Soap from 'soap';
-import Fs from 'fs';
 import AWS from 'aws-sdk';
 import X509HttpClient from 'soap-x509-http';
 import request from 'request';
+import { accountInformationProcess } from './handlers/checkEligibility';
 
 /// <reference types="aws-sdk" />
 
@@ -11,7 +11,13 @@ export const handler = async (event, context, callback) => {
     var s3 = new AWS.S3();
     var wsdl = './wsdl/AccountService.wsdl';
     var requestBody = { "accountNumber": event.requestBody.accountNumber };
-    var response = {};
+    
+    var eligbilityStatus = new accountInformationProcess(event.requestBody).EligiblityStatus();
+
+    var response = {
+        status: 200,
+        data: eligbilityStatus
+    }
     
     let caCertObjectPromise = s3.getObject({ Bucket: '', Key: '' }).promise();
     let privateKeyObjectPromise = s3.getObject({ Bucket: '', Key: '' }).promise();

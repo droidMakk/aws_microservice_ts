@@ -7,7 +7,7 @@
     "run:hello:ms": "serverless invoke local --function hello",
     "deploy": "serverless deploy --aws-profile default",
     "force:deploy": "serverless deploy --aws-profile default --force",
-    "build": "babel ./src --watch --extensions '.ts' --out-dir build",
+    "build": "babel src --watch --extensions \".ts\" --out-dir build",
     "test": "echo nothing yet"
   },
   "endpoint": " ",
