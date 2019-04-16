@@ -16,9 +16,9 @@ import {
 import { canadianEligbility, usEligibility, checkEligibleForPayoffQuote, checkOnlinePayoffEligibility, checkpayOffByMailEligibility } from "./EligibilityMethods";
 
 export class accountInformationProcess implements IAccountInformationProcess {
-	private elgibilityStatus: iEligibilityStatus;
+	elgibilityStatus: iEligibilityStatus;
 
-	private accountInformation: IAccountInformation;
+	accountInformation: IAccountInformation;
 
 	constructor(accountInformation: IAccountInformation) {
 		Object.keys(accountInformation).map(key => (this.accountInformation[key] = accountInformation[key]));
