@@ -15,16 +15,18 @@ import {
 } from "../models";
 import { canadianEligbility, usEligibility, checkEligibleForPayoffQuote, checkOnlinePayoffEligibility, checkpayOffByMailEligibility } from "./EligibilityMethods";
 
-export class accountInformationProcess implements IAccountInformationProcess {
+export default class accountInformationProcess implements IAccountInformationProcess {
 	elgibilityStatus: iEligibilityStatus;
 
 	accountInformation: IAccountInformation;
 
 	constructor(accountInformation: IAccountInformation) {
-		Object.keys(accountInformation).map(key => (this.accountInformation[key] = accountInformation[key]));
+		// Object.keys(accountInformation).map(key => (this.accountInformation[key] = accountInformation[key]));
+		this.accountInformation = accountInformation;
 
 		this.checkEligibleForPayoffQuote = this.checkEligibleForPayoffQuote.bind(this);
 		this.checkOnlinePayoffEligibility = this.checkOnlinePayoffEligibility.bind(this);
+		this.getAccountDetails = this.getAccountDetails.bind(this);
 
 		if (this.accountInformation.isOpen) {
 			this.accountInformation.editable =
@@ -81,7 +83,7 @@ export class accountInformationProcess implements IAccountInformationProcess {
 		return this.elgibilityStatus;
 	}
 
-	public get getAccountDetails(): any {
+	public getAccountDetails(): IAccountInformation {
 		return this.accountInformation;
 	}
 

@@ -1,0 +1,30 @@
+const AccountServiceWrapper = {
+  getAccount: async (productType: string, accountStatus: string, processingStatus: string, termType: string, pastDueAmount: number) => {
+
+    let accountData:any = {};
+    accountData.ProductType = { DetailedAccountType: productType };
+    accountData.Status = { AccountStatus: accountStatus, ProcessStatus: processingStatus, TermTypeStatus: termType };
+    accountData.DueAmount = { Past: { TotalAmount: pastDueAmount } }
+
+    return accountData;
+  }
+}
+
+describe('Testing User Account Data', () => {
+  
+  test('Verify account data returned',async () => {
+
+    let accountType = 'lease';
+    
+    const spy = jest.spyOn(AccountServiceWrapper,'getAccount') 
+    let accountDetails = await AccountServiceWrapper.getAccount(accountType, 'active', 'processingstatus', 'E', 12000);
+
+    expect(spy).toHaveBeenCalled();
+    expect(accountDetails.ProductType).toBe(accountType);
+
+    spy.mockRestore();
+
+
+  })
+
+})

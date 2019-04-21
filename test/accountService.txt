@@ -1,0 +1,31 @@
+interface IAccountServiceWrapper {
+    accountData: object
+}
+
+export const _AccountServiceWrapper = {
+    getAccount: () => {
+
+        const accountData = {
+            accountType: 'lease'
+        }
+
+        return accountData;
+    }
+}
+
+export class AccountServiceWrapper implements  IAccountServiceWrapper{
+
+    accountData
+
+    constructor(){
+        this.getAccount = this.getAccount.bind(this);
+        this.accountData = {};
+    }
+
+    getAccount(productType: string, accountStatus: string, processingStatus: string, termType: string, pastDueAmount: number){
+
+        this.accountData = {
+            accountType: 'lease'
+        }
+    }
+}

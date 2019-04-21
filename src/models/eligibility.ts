@@ -8,11 +8,11 @@ export enum EterminationType {
 }
 
 export enum EreposessionStatus {
-    reposessed
+    reposessed, none
 }
 
 export enum EBankruptcyStatus {
-    bankrupt
+    bankrupt, none
 }
 
 export enum ECountryType {
@@ -57,8 +57,8 @@ export interface  IAccountInformation {
     accountType: EAccountType,
     terminationStatus: ETerminationStatus,
     editable: boolean,
-    payOffAmount: 0,
-    dueAumount: 0,
+    payOffAmount: number,
+    dueAumount: number,
     disabled: boolean,
     accountStatus: EAccountStatus,
     lastEdited: Date
