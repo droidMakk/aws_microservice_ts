@@ -2,7 +2,7 @@ import Soap from 'soap';
 import AWS from 'aws-sdk';
 import X509HttpClient from 'soap-x509-http';
 import request from 'request';
-import { accountInformationProcess } from './handlers/checkEligibility';
+import  accountInformationProcess from './handlers/checkEligibility';
 
 /// <reference types="aws-sdk" />
 
