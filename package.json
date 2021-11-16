@@ -36,7 +36,7 @@
     "serverless": "^1.40.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.437.0",
+    "aws-sdk": "^2.814.0",
     "moment": "^2.24.0",
     "request": "^2.88.0",
     "soap": "^0.26.0",
